@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flip a Coin</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(180deg, #1a1a3d 0%, #2a2a5e 100%);
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+      min-height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Starry background */
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1" fill="white" opacity="0.3"/></svg>') repeat;
+      background-size: 20px;
+      opacity: 0.2;
+      z-index: 0;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: #ffd700;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+      margin-bottom: 20px;
+    }
+
+    .coin-container {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      min-height: 380px; /* Increased slightly to accommodate spacing */
+      max-width: 400px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* 3D Coin Styling */
+    .coin {
+      width: 200px;
+      height: 200px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s ease-in-out;
+      margin-bottom: 30px; /* Shift button down by adding space below coin */
+    }
+
+    .coin-face {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      position: absolute;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 28px;
+      font-weight: 600;
+      color: #fff;
+      backface-visibility: hidden;
+      border: 4px solid #333;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3), 0 0 15px rgba(0, 0, 0, 0.2);
+      text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    }
+
+    .heads {
+      background: radial-gradient(circle at 30% 30%, #ffec99, #daa520, #b8860b);
+      transform: translateZ(6px);
+    }
+
+    .heads::before {
+      content: 'H';
+      position: absolute;
+      font-size: 80px;
+      opacity: 0.2;
+      color: #fff;
+    }
+
+    .tails {
+      background: radial-gradient(circle at 30% 30%, #e6e6e6, #a9a9a9, #808080);
+      transform: translateZ(-6px) rotateY(180deg);
+    }
+
+    .tails::before {
+      content: 'T';
+      position: absolute;
+      font-size: 80px;
+      opacity: 0.2;
+      color: #fff;
+    }
+
+    /* Flip Animation */
+    .flip-heads {
+      animation: tossCoinHeads 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    .flip-tails {
+      animation: tossCoinTails 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    @keyframes tossCoinHeads {
+      0% {
+        transform: rotateY(0deg) rotateX(0deg) translateY(0);
+      }
+      50% {
+        transform: rotateY(720deg) rotateX(360deg) translateY(-30px);
+      }
+      100% {
+        transform: rotateY(1440deg) rotateX(720deg) translateY(0);
+      }
+    }
+
+    @keyframes tossCoinTails {
+      0% {
+        transform: rotateY(0deg) rotateX(0deg) translateY(0);
+      }
+      50% {
+        transform: rotateY(900deg) rotateX(360deg) translateY(-30px);
+      }
+      100% {
+        transform: rotateY(1620deg) rotateX(720deg) translateY(0);
+      }
+    }
+
+    /* Result Text Styling */
+    #resultText {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-top: 20px;
+      color: #ff6f61;
+      text-shadow: 0 0 8px rgba(255, 111, 97, 0.7);
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    #resultText.visible {
+      opacity: 1;
+    }
+
+    /* Button Styling */
+    button {
+      padding: 12px 30px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(45deg, #4CAF50, #66bb6a);
+      color: #fff;
+      border: none;
+      border-radius: 25px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+      );
+      transition: left 0.4s ease;
+    }
+
+    button:hover:not(:disabled)::before {
+      left: 100%;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    button:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* Firecracker Styling */
+    .fireworks-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+      perspective: 1000px;
+    }
+
+    .firecracker {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      transform-style: preserve-3d;
+    }
+
+    .firecracker-particle {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+    }
+
+    .firecracker-trail {
+      position: absolute;
+      width: 2px;
+      height: 8px;
+      background: linear-gradient(to bottom, #fff, transparent);
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎉 Flip a Coin</h1>
+
+  <div class="coin-container">
+    <div id="coin" class="coin">
+      <div class="coin-face heads">Heads</div>
+      <div class="coin-face tails">Tails</div>
+    </div>
+    <button id="flipButton" aria-label="Flip the coin">Flip Coin</button>
+  </div>
+
+  <div id="resultText">Result: <span id="result"></span></div>
+
+  <div id="fireworks" class="fireworks-container"></div>
+
+  <script>
+    const flipButton = document.getElementById("flipButton");
+    const coin = document.getElementById("coin");
+    const resultText = document.getElementById("resultText");
+    const resultSpan = document.getElementById("result");
+    const fireworksContainer = document.getElementById("fireworks");
+
+    flipButton.addEventListener("click", flipCoin);
+
+    function flipCoin() {
+      flipButton.disabled = true;
+      resultText.classList.remove("visible");
+
+      const isHeads = Math.random() < 0.5;
+      const result = isHeads ? "Heads" : "Tails";
+
+      coin.classList.remove("flip-heads", "flip-tails");
+      coin.classList.add(isHeads ? "flip-heads" : "flip-tails");
+
+      setTimeout(() => {
+        resultSpan.textContent = result;
+        resultText.classList.add("visible");
+
+        triggerFirecrackers();
+
+        coin.classList.remove("flip-heads", "flip-tails");
+        coin.style.transform = isHeads ? "rotateY(0deg) rotateX(0deg)" : "rotateY(180deg) rotateX(0deg)";
+        flipButton.disabled = false;
+      }, 1400);
+    }
+
+    function triggerFirecrackers() {
+      const bursts = 3; // Number of firecracker bursts
+      const coinRect = coin.getBoundingClientRect();
+      const centerX = coinRect.left + coinRect.width / 2;
+      const centerY = coinRect.top + coinRect.height / 2;
+
+      for (let b = 0; b < bursts; b++) {
+        setTimeout(() => {
+          const particleCount = 20;
+          const firecracker = document.createElement("div");
+          firecracker.classList.add("firecracker");
+          firecracker.style.left = `${centerX}px`;
+          firecracker.style.top = `${centerY}px`;
+          fireworksContainer.appendChild(firecracker);
+
+          const colors = ["#ff6f61", "#ffd700", "#4fc3f7", "#e91e63", "#76ff03"];
+          const color = colors[Math.floor(Math.random() * colors.length)];
+
+          for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement("div");
+            particle.classList.add("firecracker-particle");
+            particle.style.background = color;
+
+            // Random 3D direction
+            const theta = Math.random() * 2 * Math.PI;
+            const phi = Math.random() * Math.PI;
+            const distance = 50 + Math.random() * 100;
+            const x = distance * Math.sin(phi) * Math.cos(theta);
+            const y = distance * Math.sin(phi) * Math.sin(theta);
+            const z = distance * Math.cos(phi);
+
+            // Trail
+            const trail = document.createElement("div");
+            trail.classList.add("firecracker-trail");
+            trail.style.background = `linear-gradient(to bottom, ${color}, transparent)`;
+            particle.appendChild(trail);
+
+            firecracker.appendChild(particle);
+
+            const keyframes = `
+              @keyframes burst${b}_${i} {
+                0% {
+                  transform: translate3d(0, 0, 0) scale(1);
+                  opacity: 1;
+                }
+                100% {
+                  transform: translate3d(${x}px, ${y}px, ${z}px) scale(0.5);
+                  opacity: 0;
+                }
+              }
+            `;
+            document.styleSheets[0].insertRule(keyframes, 0);
+            particle.style.animation = `burst${b}_${i} 1.2s ease-out forwards`;
+            trail.style.animation = `burst${b}_${i} 1.2s ease-out forwards`;
+
+            particle.addEventListener("animationend", () => {
+              particle.remove();
+            });
+          }
+
+          setTimeout(() => firecracker.remove(), 1200);
+        }, b * 200); // Stagger bursts by 200ms
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Spin Wheel App</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <h1>🎡 Spin the Wheel & Flip a Coin</h1>
+
+  <div class="controls">
+    <input type="number" id="segmentCount" placeholder="Number of Segments" />
+    <button onclick="generateSegments()">Set Segments</button>
+    <div id="segmentInputs"></div>
+    <button onclick="drawWheel()">Draw Wheel</button>
+    <button onclick="spinWheel()">Spin</button>
+    <button onclick="window.location.href='flip.html';">Flip a Coin</button> <!-- Updated with link to flip.html -->
+  </div>
+
+  <div class="wheel-container">
+    <div class="pointer-down"></div>
+    <canvas id="wheel" width="400" height="400"></canvas>
+  </div>
+
+  <div id="resultModal" class="modal">
+    <div class="modal-content">
+      <h2>🎉 Result!</h2>
+      <p id="resultText"></p>
+      <button onclick="closeModal()">Close</button>
+    </div>
+  </div>
+
+  <canvas id="confetti"></canvas>
+
+  <script src="script.js"></script>
+</body>
+</html>
